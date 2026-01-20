@@ -1,0 +1,5 @@
+# Railway configuration for the standalone Receipt Store + Gemini backend
+[build]
+root = "."
+buildCommand = "npm install"
+startCommand = "node server.js"
