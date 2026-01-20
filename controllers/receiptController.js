@@ -1,6 +1,7 @@
 const Receipt = require('../models/Receipt');
 const { encrypt, decrypt } = require('../utils/encryption');
 const { summarizeReceipt } = require('../services/geminiService');
+const { extractTextFromCloudinaryUrl } = require('../services/ocrService');
 const { uploadBufferToCloudinary } = require('../config/cloudinary');
 
 // Normalize and validate incoming payload from Flutter / client
@@ -44,13 +45,26 @@ exports.createReceipt = async (req, res) => {
   try {
     const payload = normalizePayload(req.body || {});
 
+    const cloudinaryFileUrlRaw =
+      (req.body.cloudinaryFileUrl || req.body.cloudinary_url || '').trim() || null;
+
+    let ocrText = (req.body.ocrText || req.body.ocr_text || '').toString() || '';
+
+    // If client did not provide OCR text, attempt to extract it from the
+    // Cloudinary file (PDF/image) directly on the backend for best accuracy.
+    if (!ocrText && cloudinaryFileUrlRaw) {
+      try {
+        ocrText = await extractTextFromCloudinaryUrl(cloudinaryFileUrlRaw);
+      } catch (ocrError) {
+        console.error('extractTextFromCloudinaryUrl failed:', ocrError);
+      }
+    }
+
     const contextForLLM = {
-      cloudinaryFileUrl:
-        (req.body.cloudinaryFileUrl || req.body.cloudinary_url || '').trim() || null,
+      cloudinaryFileUrl: cloudinaryFileUrlRaw,
       documentType:
         (req.body.documentType || req.body.document_type || '').trim() || null,
-      ocrText:
-        (req.body.ocrText || req.body.ocr_text || '').toString() || null,
+      ocrText,
       ocrJson: req.body.ocrJson || req.body.ocr_json || null,
       receipt: {
         vendor: payload.vendor,

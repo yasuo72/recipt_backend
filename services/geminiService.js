@@ -1,10 +1,16 @@
 const axios = require('axios');
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-pro';
+
+// Default to a free-friendly, widely available text model.
+// You can override this via GEMINI_MODEL in your environment.
+const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
+
+// For text-only use, the recommended endpoint is the v1 generateContent route.
+// GEMINI_API_URL can still override this if explicitly set.
 const GEMINI_API_URL =
   process.env.GEMINI_API_URL ||
-  `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
+  `https://generativelanguage.googleapis.com/v1/models/${GEMINI_MODEL}:generateContent`;
 
 if (!GEMINI_API_KEY) {
   console.warn(
