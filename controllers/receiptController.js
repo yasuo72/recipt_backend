@@ -60,7 +60,18 @@ exports.createReceipt = async (req, res) => {
       },
     };
 
-    const summary = await summarizeReceipt(contextForLLM);
+    let summary;
+    try {
+      summary = await summarizeReceipt(contextForLLM);
+    } catch (llmError) {
+      console.error(
+        'summarizeReceipt failed:',
+        llmError && llmError.response && llmError.response.data
+          ? llmError.response.data
+          : llmError
+      );
+      summary = 'Summary temporarily unavailable.';
+    }
 
     const doc = new Receipt({
       userId: payload.userId,
