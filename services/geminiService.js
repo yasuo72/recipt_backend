@@ -4,7 +4,7 @@ const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 // Default to a free-friendly, widely available text model.
 // You can override this via GEMINI_MODEL in your environment.
-const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
+const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
 
 // For text-only use, the recommended endpoint is the v1 generateContent route.
 // GEMINI_API_URL can still override this if explicitly set.
