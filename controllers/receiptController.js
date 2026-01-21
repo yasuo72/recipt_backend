@@ -78,13 +78,22 @@ exports.createReceipt = async (req, res) => {
     try {
       summary = await summarizeReceipt(contextForLLM);
     } catch (llmError) {
-      console.error(
-        'summarizeReceipt failed:',
+      const errorPayload =
         llmError && llmError.response && llmError.response.data
           ? llmError.response.data
-          : llmError
-      );
-      summary = 'Summary temporarily unavailable.';
+          : llmError;
+      console.error('summarizeReceipt failed:', errorPayload);
+
+      const message =
+        errorPayload && errorPayload.error && errorPayload.error.message
+          ? errorPayload.error.message
+          : llmError && llmError.message
+            ? llmError.message
+            : 'AI service error';
+
+      // Include the underlying AI error message in the fallback so we can
+      // see from the client what went wrong during summarization.
+      summary = `Summary temporarily unavailable: ${message}`;
     }
 
     const doc = new Receipt({
