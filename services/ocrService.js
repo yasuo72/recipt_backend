@@ -17,13 +17,23 @@ function isPdf(url, contentType) {
 }
 
 async function extractTextFromPdfBuffer(buffer) {
-  const data = await pdfParse(buffer);
-  const text = (data.text || '').trim();
-  if (text) {
-    return text;
-  }
+  try {
+    const data = await pdfParse(buffer);
+    const text = (data.text || '').trim();
+    if (text) {
+      console.log('[OCR] pdf-parse extracted text length:', text.length);
+      return text;
+    }
 
-  return await extractTextFromImageBuffer(buffer);
+    console.warn('[OCR] pdf-parse returned empty text for PDF buffer');
+    // NOTE: Tesseract.js cannot read PDFs directly. Converting PDF pages to images
+    // would require additional tooling that is not enabled here, so we currently
+    // return an empty string instead of crashing the worker.
+    return '';
+  } catch (err) {
+    console.error('[OCR] pdf-parse failed for PDF buffer:', err.message || err);
+    return '';
+  }
 }
 
 async function extractTextFromImageBuffer(buffer) {
