@@ -18,7 +18,12 @@ function isPdf(url, contentType) {
 
 async function extractTextFromPdfBuffer(buffer) {
   const data = await pdfParse(buffer);
-  return (data.text || '').trim();
+  const text = (data.text || '').trim();
+  if (text) {
+    return text;
+  }
+
+  return await extractTextFromImageBuffer(buffer);
 }
 
 async function extractTextFromImageBuffer(buffer) {
