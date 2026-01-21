@@ -12,6 +12,12 @@ const GEMINI_API_URL =
   process.env.GEMINI_API_URL ||
   `https://generativelanguage.googleapis.com/v1/models/${GEMINI_MODEL}:generateContent`;
 
+console.log('=== Gemini Configuration ===');
+console.log('GEMINI_API_KEY:', GEMINI_API_KEY ? 'SET' : 'NOT SET');
+console.log('GEMINI_MODEL:', GEMINI_MODEL);
+console.log('GEMINI_API_URL:', GEMINI_API_URL);
+console.log('==========================');
+
 if (!GEMINI_API_KEY) {
   console.warn(
     'GEMINI_API_KEY is not set. Receipt summaries will fail until it is configured.'
