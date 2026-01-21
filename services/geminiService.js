@@ -107,24 +107,27 @@ function buildPrompt(context) {
     '   - In Hindi lines, only explain in very simple words what the medicine is for IF that purpose is clearly written.\n\n' +
     '4. If test names are present:\n' +
     '   - Expand common abbreviations (e.g., CBC → Complete Blood Count).\n' +
-    '   - You may briefly say what kind of test it is (e.g., blood test, urine test) in Hindi,\n' +
-    '     but do NOT interpret whether the result is normal or abnormal.\n' +
+    '   - You may briefly say what kind of test it is (e.g., blood test, urine test) in Hindi.\n' +
+    '   - If the report itself clearly marks any test or value as HIGH / LOW / ABNORMAL\n' +
+    '     (for example using words like "high", "low", "abnormal" or symbols like H, L, ↑, ↓),\n' +
+    '     you may state that the *report* marks it as high or low.\n' +
+    '   - Do NOT explain what disease or health problem that could mean.\n' +
     '   - Do NOT create new medical conclusions.\n\n' +
     '5. If numeric results are present (like lab values):\n' +
-    '   - You may list a few key values exactly as written (e.g., Hb = 11 g/dL).\n' +
-    '   - Do NOT say if they are good, bad, normal, or abnormal.\n\n' +
+    '   - List key values exactly as written (e.g., Hb = 11 g/dL).\n' +
+    '   - If the report clearly labels a value as high/low/abnormal or uses H, L, ↑, ↓,\n' +
+    '     you may add a short note like "(marked as high in report)" or "(marked as low in report)".\n' +
+    '   - Do NOT say whether it is good or bad for health, and do NOT describe diseases or risks.\n\n' +
     '6. If any information is missing:\n' +
     '   - Clearly mark it as "Not mentioned".\n\n' +
     '7. LANGUAGE RULES (BILINGUAL):\n' +
     '   - For each important section, provide both English and Hindi.\n' +
     '   - Use very simple English sentences.\n' +
-    '   - Use very simple Hindi in Devanagari script.\n' +
-    '   - For every bullet where both are present, write two lines:\n' +
-    '       English: ...\n' +
-    '       हिन्दी: ...\n' +
-    '   - Do NOT mix Hindi and English in the same sentence.\n' +
-    '   - If you cannot translate a specific technical term safely, keep it in English\n' +
-    '     and write a very simple Hindi explanation around it.\n\n' +
+    '   - Use very simple Hindi sentences in Devanagari script.\n' +
+    '   - Use bullet points.\n' +
+    '   - Do not assume anything that is not written in the document.\n' +
+    '   - Do not provide diagnosis or treatment advice.\n' +
+    '   - Be precise and factual.\n\n' +
     '---------------------------------\n' +
     'SUMMARY OUTPUT FORMAT (BILINGUAL, SIMPLE)\n' +
     '---------------------------------\n\n' +
@@ -146,8 +149,14 @@ function buildPrompt(context) {
     '- English: List important tests (e.g., CBC, Blood Sugar). Expand short forms (CBC → Complete Blood Count).\n' +
     '- हिन्दी: इन जाँचों के नाम साधारण हिंदी में लिखें (जैसे CBC → कंप्लीट ब्लड काउंट), लेकिन परिणाम अच्छा या बुरा न लिखें।\n\n' +
     '### Results Highlight (if clearly written) / \n' +
-    '- English: Mention only key numeric values exactly as written (for example: Hb = 11 g/dL). Do not say normal/abnormal.\n' +
-    '- हिन्दी: वही संख्याएँ सरल हिंदी में दोहराएँ, लेकिन यह न लिखें कि वे सामान्य हैं या नहीं।\n\n' +
+    '- English: Mention key numeric values exactly as written (for example: Hb = 11 g/dL).\n' +
+    '  If the report marks a value as high/low/abnormal (or with H/L/↑/↓), you may add\n' +
+    '  a note such as "(marked high in lab report)" or "(marked low in lab report)".\n' +
+    '  Do NOT say what disease it means or whether it is dangerous.\n' +
+    '- हिन्दी: प्रमुख संख्यात्मक मानों को बिल्कुल रिपोर्ट में लिखे अनुसार दोहराएँ\n' +
+    '  (उदाहरण: Hb = 11 g/dL)। अगर रिपोर्ट किसी मान को high/low/abnormal या H/L/↑/↓ से\n' +
+    '  चिन्हित करती है, तो आप छोटा सा वाक्य जोड़ सकते हैं जैसे "(रिपोर्ट में high लिखा है)"\n' +
+    '  या "(रिपोर्ट में low लिखा है)"। किसी भी बीमारी या खतरे के बारे में न लिखें।\n\n' +
     '### Procedures / Treatments (if present) / \n' +
     '- English: Briefly list any procedures or treatments mentioned.\n' +
     '- हिन्दी: रिपोर्ट में लिखी गयी किसी भी प्रक्रिया या इलाज को छोटे और आसान शब्दों में लिखें।\n\n' +
